@@ -1,196 +1,176 @@
-﻿using System;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
 
 namespace ДЗ1
 {
+    abstract class Point
+    {
+        public Point(double x, double y)
+        {
+            this.X = x;
+            this.Y = y;
+        }
+
+        private double x;
+        private double y;
+        public double X { get => x; set => x = value; }
+        public double Y { get => y; set => y = value; }
+
+        public abstract void Print();
+
+        public virtual void Move(double dx, double dy)
+        {
+            this.X *= dx;
+            this.Y *= dy;
+        }
+
+        public abstract void Scale(double temp);
+
+    }
+
+    class Circle : Point
+    {
+        public Circle(double x,double y, double r) : base(x,y)
+        {
+            this.R = r;
+        }
+        private double r;
+
+        public double R { get => r; set => r = value; }
+
+        public override void Scale(double temp)
+        {
+            this.R *= temp;
+        }
+
+        public override void Print()
+        {
+            Console.WriteLine($"Circle with center ({this.X};{this.Y}) and radius {this.R}");
+        }
+    }
+    class Rectangle : Point
+    {
+       
+        private double dx;
+        private double dy;
+        public double DX { get => dx; set => dx = value; }
+        public double DY { get => dy; set => dy = value; }
+        public Rectangle(double x, double y, double dx, double dy):base( x, y)
+        {
+            this.DX += dx;
+            this.DY += dy;
+
+        }
+
+        public override void Scale(double temp)
+        {
+
+            this.DX *= temp;
+            this.DY *= temp;
+        }
+        
+        public override void Print()
+        {
+            Console.WriteLine($"Rectangle with dots in ({this.X};{this.Y}) , ({this.X + this.DX};{this.Y}) , " +
+                $" ({this.X + this.DX};{this.Y + this.DY}) , ({this.X};{this.Y + this.DY})");
+        }
+
+
+
+    }
+    class Triangle : Rectangle
+    {
+        private double dx2;
+        private double dy2;
+        public Triangle(double x, double y, double dx, double dy, double dx2, double dy2):base(x,y,dx,dy)
+        {
+          
+            this.DX2 = dx2;
+            this.DY2 = dy2;
+        }
+        public double DX2 { get => dx2; set => dx2 = value; }
+        public double DY2 { get => dy2; set => dy2 = value; }
+
+        public override void Scale(double temp)
+        {
+            base.Scale(temp);
+            this.DX2 *= temp;
+            this.DY2 *= temp;
+        }
+       
+
+        public override void Print()
+        {
+            Console.WriteLine($"Triangle with dots ({this.X};{this.Y}) , ({this.X + this.DX};{this.Y + this.DY}) , " + 
+                $"({this.X + this.DX2};{this.Y + this.DY2})");
+        }
+    }
+    class Image : Rectangle
+    {
+        public Image() : base(0, 0, 0, 0)
+        {
+            this.list = new List<Point>();
+        }
+        List<Point> list;
+        public void Add(Point p)
+        {
+            list.Add(p);
+        }
+        public override void Scale(double temp)
+        {
+            foreach(var l in list)
+            {
+                l.Scale(temp);
+            }
+            
+        }
+        public override void Print()
+        {
+           
+            foreach (var l in list)
+            {
+                l.Print();
+            }
+            
+    }
+        public override void Move(double dx, double dy)
+        {
+            foreach (var l in list)
+            {
+                l.Move(dx,dy);
+            }
+        }
+    }
     class Program
     {
-        
-         abstract class Point
-         {
-          
 
-            protected int X { get; set; }
-        protected int Y { get; set; }
-           
-
-           
-        public abstract void Show();
-
-        public virtual void Move(int X_Move, int Y_Move) 
+        static void Main(string[] args)
         {
-            Console.WriteLine("Введите перемещение вдоль X");
-            X_Move = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите перемещение вдоль Y");
-            Y_Move = Convert.ToInt32(Console.ReadLine());
-            X = X + X_Move;
-            Y = Y + Y_Move;
-            Console.WriteLine("Новые координаты Х " + X);
+            Triangle t = new Triangle(1,2,3,4,5,6);
+            Rectangle r = new Rectangle(1, 2, 3, 4);
+            Circle c = new Circle(1, 2, 3);
+            Image i = new Image();
+            i.Add(t);
+            i.Add(r);
+            i.Add(c);
 
-            Console.WriteLine("Новые координаты Y " + Y);
-        }
-        
-        public abstract void Scale(int temp);
-         }
+            i.Print();
+            Console.WriteLine("---------------");
+            i.Move(1, 1);
+            i.Print();
+            Console.WriteLine("---------------");
+            i.Scale(2);
+            i.Print();
+            Console.WriteLine("---------------");
+            Console.ReadLine();
 
-         class Circle : Point
-    {
-        
-        int R { get; set; }
-      
 
-        public override void Move(int X_Move, int Y_Move)
-        {
-                Console.WriteLine("Введите перемещение вдоль X");
-                X_Move = Convert.ToInt32(Console.ReadLine());
-                Console.WriteLine("Введите перемещение вдоль Y");
-                Y_Move = Convert.ToInt32(Console.ReadLine());
-                X = X + X_Move;
-                Y = Y + Y_Move;
-                Console.WriteLine("Новые координаты Х " + X);
 
-                Console.WriteLine("Новые координаты Y " + Y);
-            }
 
-        public override void Scale(int temp)
-        {
-            R *= temp;
         }
 
-        public override void Show()
-        {
-        Console.WriteLine("Введите значение координаты X");
-        X = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("Введите значение координаты Y");
-        Y = Convert.ToInt32(Console.ReadLine());
-        R = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine($"круг со следующими параметрами: ");
-        }
-    }
-   class Rectangle : Point
-    {
-        Point pointrect;
-        int DX ;
-        int DY ;
-            
-        public int DX1 { get => DX; set => DX = value; }
-        public int DY1 { get => DY; set => DY = value; }
-        internal Point Pointrect { get => pointrect; set => pointrect = value; }
-
-        public override void Scale(int temp)
-        {
-
-            DX *= temp;
-            DY *= temp;
-        }
-        public override void Move(int X_Move,int Y_Move)
-        {
-            Console.WriteLine("Введите перемещение вдоль X");
-            X_Move = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите перемещение вдоль Y");
-            Y_Move = Convert.ToInt32(Console.ReadLine());
-            X = X + X_Move;
-            Y = Y + Y_Move;
-            DX = DX + X_Move;
-            DY = DY + Y_Move;
-            Console.WriteLine("Новые координаты Х " + X);
-            Console.WriteLine("Новые координаты DХ " + DX);
-            Console.WriteLine("Новые координаты Y " + Y);
-            Console.WriteLine("Новые координаты DY " + DY);
-        }
-        public override void Show()
-        {
-        Console.WriteLine("Введите значение координаты X");
-        X = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("Введите значение координаты Y");
-        Y = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("Введите значение координаты DX");
-        DX = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine("Введите значение координаты DY");
-        DY = Convert.ToInt32(Console.ReadLine());
-        Console.WriteLine($"прямоугольник со следующими параметрами: "); 
-        }
-
-
-           
-    }
-   class Triangle : Rectangle
-    {
-        Point pointtriang;
-        Rectangle recttriang;
-         int DX2;
-         int DY2;
-        internal Point Pointtriang { get => pointtriang; set => pointtriang = value; }
-        internal Rectangle Recttriang { get => recttriang; set => recttriang = value; }
-        public int DX21 { get => DX2; set => DX2 = value; }
-        public int DY21 { get => DY2; set => DY2 = value; }
-
-        public override void Scale(int temp)
-        {
-            DX2 *= temp;
-            DY2 *= temp;
-        }
-        public override void Move(int X_Move, int Y_Move)
-        {
-            Console.WriteLine("Введите перемещение вдоль X");
-            X_Move = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите перемещение вдоль Y");
-            Y_Move = Convert.ToInt32(Console.ReadLine());
-            X = X + X_Move;
-            Y = Y + Y_Move;
-            DX1 = DX1 + X_Move;
-            DY1 = DY1 + Y_Move;
-            DX2 = DX2+ X_Move;
-            DY2 = DY2 + Y_Move;
-            Console.WriteLine("Новые координаты Х " + X);
-            Console.WriteLine("Новые координаты DХ1 " + DX1);
-            Console.WriteLine("Новые координаты DХ2 " + DX2);
-            Console.WriteLine("Новые координаты Y " + Y);
-            Console.WriteLine("Новые координаты DY1 " + DY1);
-            Console.WriteLine("Новые координаты DY2 " + DY2);
-        }
-
-        public override void Show()
-        {
-            Console.WriteLine("Введите значение координаты X");
-            X = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите значение координаты Y");
-            Y = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите значение координаты DX1");
-            DX1 = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите значение координаты DY1");
-            DY1 = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите значение координаты DX2");
-            DX2 = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine("Введите значение координаты DY2");
-            DY2 = Convert.ToInt32(Console.ReadLine());
-            Console.WriteLine($"треугольник со следующими параметрами: {X},{Y} - {DX1}, {DY1}, -{DX2}, {DY2}");
-        }
-    }
-        class Picture : Rectangle
-        {
-            static void Main(string[] args)
-            {
-                
-                Circle circle = new Circle();
-                circle.Move(1,1);
-                circle.Scale(2);
-                circle.Show();
-                Rectangle rect = new Rectangle();
-                rect.Show();
-                rect.Scale(3);
-                rect.Move(1, 1);
-                Triangle tri = new Triangle();
-                tri.Move(1,1);
-                tri.Show();
-                tri.Scale(1);
-
-
-
-
-
-
-            }
-        }
     }
    
 }
